@@ -38,6 +38,17 @@ flags.DEFINE_string("img_path", "", "Path to images")
 FLAGS = flags.FLAGS
 
 
+def class_text_to_int(row_label):
+    if row_label == 'Green':
+        return 1
+    elif row_label == 'Yellow':
+        return 2
+    elif row_label == 'Red':
+        return 3      
+    else:
+        None
+
+
 def split(df, group):
     data = namedtuple("data", ["filename", "object"])
     gb = df.groupby(group)
@@ -70,13 +81,15 @@ def create_tf_example(group, path, label_map):
         ymins.append(row["ymin"] / height)
         ymaxs.append(row["ymax"] / height)
         classes_text.append(row["class"].encode("utf8"))
-        class_index = label_map.get(row["class"])
-        assert (
-            class_index is not None
-        ), "class label: `{}` not found in label_map: {}".format(
-            row["class"], label_map
-        )
-        classes.append(class_index)
+        #class_index = label_map.get(row["class"])
+        #assert (
+        #    class_index is not None
+        #), "class label: `{}` not found in label_map: {}".format(
+        #    row["class"], label_map
+        #)
+        #classes.append(class_index)
+        classes.append(class_text_to_int(row["class"]))
+        
 
     tf_example = tf.train.Example(
         features=tf.train.Features(
